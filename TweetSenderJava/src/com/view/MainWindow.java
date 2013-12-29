@@ -5,7 +5,10 @@
 package com.view;
 
 import com.controller.Controller;
-import java.awt.Cursor;
+import gnu.io.CommPortIdentifier;
+import java.util.Enumeration;
+import javax.swing.JMenuItem;
+import javax.swing.JRadioButtonMenuItem;
 
 /**
  *
@@ -54,10 +57,14 @@ public class MainWindow extends javax.swing.JFrame {
         lbCountChar = new javax.swing.JLabel();
         btSend = new javax.swing.JButton();
         jMenuBar2 = new javax.swing.JMenuBar();
-        jMenu4 = new javax.swing.JMenu();
+        mOptions = new javax.swing.JMenu();
+        miScanPorts = new javax.swing.JMenuItem();
+        mSerialPort = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
+        mHelp = new javax.swing.JMenu();
+        miToken = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
-        jMenuItem2 = new javax.swing.JMenuItem();
+        miAbout = new javax.swing.JMenuItem();
 
         jMenu1.setText("File");
         jMenuBar1.add(jMenu1);
@@ -85,6 +92,7 @@ public class MainWindow extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(taTweet);
 
+        pfToken.setText("107308370-ZDZViafGcTrHVo2eRnVFBcWoRxiTdba5kJWcvcR5");
         pfToken.setToolTipText("Insira seu token aqui");
         pfToken.setEchoChar('*');
         pfToken.addActionListener(new java.awt.event.ActionListener() {
@@ -106,34 +114,64 @@ public class MainWindow extends javax.swing.JFrame {
         lbCountChar.setText("0/160");
 
         btSend.setText("Send");
+        btSend.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btSendActionPerformed(evt);
+            }
+        });
 
-        jMenu4.setText("Help");
+        mOptions.setText("Options");
 
-        jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F2, 0));
-        jMenuItem1.setText("How to get a token");
-        jMenuItem1.addMouseListener(new java.awt.event.MouseAdapter() {
+        miScanPorts.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, 0));
+        miScanPorts.setText("Scan serial ports");
+        mOptions.add(miScanPorts);
+
+        mSerialPort.setText("Serial port");
+        mSerialPort.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                mSerialPortMouseEntered(evt);
+            }
+        });
+        mSerialPort.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mSerialPortActionPerformed(evt);
+            }
+        });
+
+        jMenuItem1.setText("This menu is populated dynamically");
+        mSerialPort.add(jMenuItem1);
+
+        mOptions.add(mSerialPort);
+
+        jMenuBar2.add(mOptions);
+
+        mHelp.setText("Help");
+
+        miToken.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F2, 0));
+        miToken.setText("How to get a token");
+        miToken.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jMenuItem1MouseClicked(evt);
+                miTokenMouseClicked(evt);
             }
         });
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        miToken.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                miTokenActionPerformed(evt);
             }
         });
-        jMenu4.add(jMenuItem1);
-        jMenu4.add(jSeparator1);
+        mHelp.add(miToken);
+        mHelp.add(jSeparator1);
 
-        jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
-        jMenuItem2.setText("About");
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+        miAbout.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
+        miAbout.setText("About");
+        miAbout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem2ActionPerformed(evt);
+                miAboutActionPerformed(evt);
             }
         });
-        jMenu4.add(jMenuItem2);
+        mHelp.add(miAbout);
 
-        jMenuBar2.add(jMenu4);
+        jMenuBar2.add(mHelp);
 
         setJMenuBar(jMenuBar2);
 
@@ -145,12 +183,12 @@ public class MainWindow extends javax.swing.JFrame {
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(layout.createSequentialGroup()
-                        .add(pfToken)
+                        .add(pfToken, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(cbShowToken))
                     .add(layout.createSequentialGroup()
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(org.jdesktop.layout.GroupLayout.TRAILING, jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
+                            .add(org.jdesktop.layout.GroupLayout.TRAILING, jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 532, Short.MAX_VALUE)
                             .add(layout.createSequentialGroup()
                                 .add(lbCountChar)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -174,7 +212,7 @@ public class MainWindow extends javax.swing.JFrame {
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(lbTweet)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 57, Short.MAX_VALUE)
+                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lbCountChar)
@@ -205,17 +243,28 @@ public class MainWindow extends javax.swing.JFrame {
         c.calcTweetLength(taTweet, lbCountChar);
     }//GEN-LAST:event_taTweetKeyTyped
 
-    private void jMenuItem1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuItem1MouseClicked
+    private void miTokenMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_miTokenMouseClicked
         
-    }//GEN-LAST:event_jMenuItem1MouseClicked
+    }//GEN-LAST:event_miTokenMouseClicked
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+    private void miTokenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miTokenActionPerformed
         c.getToken();
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+    }//GEN-LAST:event_miTokenActionPerformed
 
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+    private void miAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miAboutActionPerformed
         c.showHelp();
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
+    }//GEN-LAST:event_miAboutActionPerformed
+
+    private void btSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSendActionPerformed
+        c.createPortsMenu(mSerialPort);
+    }//GEN-LAST:event_btSendActionPerformed
+
+    private void mSerialPortActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mSerialPortActionPerformed
+        
+    }//GEN-LAST:event_mSerialPortActionPerformed
+
+    private void mSerialPortMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mSerialPortMouseEntered
+    }//GEN-LAST:event_mSerialPortMouseEntered
 
     /**
      * @param args the command line arguments
@@ -256,16 +305,20 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JCheckBox cbShowToken;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenu jMenu4;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuBar jMenuBar2;
     private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JLabel lbCountChar;
     private javax.swing.JLabel lbToken;
     private javax.swing.JLabel lbTweet;
+    private javax.swing.JMenu mHelp;
+    private javax.swing.JMenu mOptions;
+    private javax.swing.JMenu mSerialPort;
+    private javax.swing.JMenuItem miAbout;
+    private javax.swing.JMenuItem miScanPorts;
+    private javax.swing.JMenuItem miToken;
     private javax.swing.JPasswordField pfToken;
     private javax.swing.JTextArea taTweet;
     // End of variables declaration//GEN-END:variables

@@ -9,35 +9,46 @@ package com.model;
  * @author henriquevalcanaia
  */
 public class Tweet {
-    private static String tweet;
-    private static String token;
+    
+    private static final int ID_TOKEN   = 1;
+    private static final int ID_TWEET   = 2;
+    private static final char SEPARATOR = (char) 9679;
+
+    private String tweet;
+    private String token;
 
     public Tweet() {
     }
-    
+
     public Tweet(String tweet, String token) {
-        Tweet.tweet = tweet;
-        Tweet.token = token;
+        this.tweet = tweet;
+        this.token = token;
     }
 
-    public static String getTweet() {
-        return tweet;
+    public String getTweet() {
+        return this.tweet;
     }
 
-    public static void setTweet(String tweet) {
-        Tweet.tweet = tweet;
+    public void setTweet(String tweet) {
+        this.tweet = tweet;
     }
 
-    public static String getToken() {
-        return token;
+    public String getToken() {
+        return this.token;
     }
 
-    public static void setToken(String token) {
-        Tweet.token = token;
+    public void setToken(String token) {
+        this.token = token;
     }
-    
-    public static boolean sendTweet(){
+
+    public boolean sendTweet(SerialClass serial) {
+        serial.writeData(ID_TOKEN + SEPARATOR + this.getToken());
+        serial.writeData(ID_TWEET + SEPARATOR + this.getTweet());
         return true;
     }
-    
+
+    @Override
+    public String toString() {
+        return "Tweet{" + "tweet=" + tweet + ", token=" + token + '}';
+    }
 }

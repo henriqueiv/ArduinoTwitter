@@ -4,20 +4,28 @@
  */
 package com.controller;
 
-import com.model.SerialCom;
+import com.model.Port;
+import com.model.SerialClass;
 import com.model.Tweet;
+import gnu.io.CommPortIdentifier;
 import java.awt.Color;
 import java.awt.Desktop;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JTextArea;
 
 /**
@@ -30,15 +38,14 @@ public class Controller {
     private static final char CHAR_ASTERISCO = (char) 42;
     private static final char CHAR_NENHUM = (char) 0;
     private static final String WEBSITE_TOKEN = "http://arduino-tweet.appspot.com/oauth/twitter/login";
-    
     private JTextArea taTweet;
     private JLabel lbCountChar;
     private JPasswordField pfToken;
     private JCheckBox cbShowToken;
-    private Tweet tweet;
-    private SerialCom serial;
+    private SerialClass serial;
 
     public Controller() {
+        serial = new SerialClass();
     }
 
     public JTextArea getTaTweet() {
@@ -121,5 +128,72 @@ public class Controller {
     public void showHelp() {
         final JPanel panel = new JPanel();
         JOptionPane.showMessageDialog(panel, "This aplication was created by Henrique Valcanaia to test a Arduino Twitter API.", "Help", JOptionPane.QUESTION_MESSAGE);
+    }
+
+    public void createPortsMenu(JMenu menu) {
+        ArrayList<Port> ports;
+        this.clearMenuItems(menu);
+        ports = this.getSerialPorts();
+        ButtonGroup groupMenu = new ButtonGroup();
+        for (Port port : ports) {
+            //System.out.println(port.toString());
+            //if (port.getPortType() == CommPortIdentifier.PORT_PARALLEL) {
+            JRadioButtonMenuItem portMenu = new JRadioButtonMenuItem();
+            portMenu.setText(port.getPortName());
+            ActionListener al = new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Controller.selectPortMenu(e.getSource());
+                }
+            };
+            portMenu.addActionListener(al);
+            groupMenu.add(portMenu);
+            menu.add(portMenu);
+            //}
+        }
+    }
+
+    private void clearMenuItems(JMenu menu) {
+        while (menu.getItemCount() > 0) {
+            menu.remove(menu.getItemCount() - 1);
+        }
+    }
+
+    private ArrayList<Port> getSerialPorts() {
+        ArrayList<Port> ports = new ArrayList<>();
+        Enumeration portList = CommPortIdentifier.getPortIdentifiers();
+        while (portList.hasMoreElements()) {
+            CommPortIdentifier portId = (CommPortIdentifier) portList.nextElement();
+            Port port = new Port();
+            port.setPortName(portId.getName());
+            port.setPortType(portId.getPortType());
+            ports.add(port);
+        }
+        return ports;
+    }
+
+    public static void selectPortMenu(Object source) {
+        System.out.println(source.getClass().getCanonicalName());
+        if (source instanceof JMenuItem) {
+            JMenuItem m = (JMenuItem) source;
+            System.out.println("Setar porta " + m.getText());
+        } else {
+            JOptionPane.showMessageDialog(null, "Invalid class used on "
+                    + Controller.class + ".selectPortMenu()\n"
+                    + "Class: " + source.getClass().getName(),
+                    "Dev Mode", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public boolean sendTweet(Tweet tweet) {
+        boolean tweetSent;
+
+        if (!serial.isInitialized()) {
+            serial.initialize();
+        }
+
+        tweetSent = tweet.sendTweet(serial);
+
+        return tweetSent;
     }
 }

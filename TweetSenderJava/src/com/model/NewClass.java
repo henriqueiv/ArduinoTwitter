@@ -8,6 +8,6 @@ package com.model;
  *
  * @author henriquevalcanaia
  */
-public class SerialCom {
+public class NewClass {
     
 }
