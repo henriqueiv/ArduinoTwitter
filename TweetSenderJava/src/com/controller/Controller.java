@@ -16,6 +16,7 @@ import java.net.URISyntaxException;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
 
@@ -118,6 +119,7 @@ public class Controller {
     }
 
     public void showHelp() {
-        JOptionPane.showMessageDialog(null, "This aplication was created by Henrique Valcanaia to test a Arduino Twitter API.", "Help", JOptionPane.QUESTION_MESSAGE);
+        final JPanel panel = new JPanel();
+        JOptionPane.showMessageDialog(panel, "This aplication was created by Henrique Valcanaia to test a Arduino Twitter API.", "Help", JOptionPane.QUESTION_MESSAGE);
     }
 }
