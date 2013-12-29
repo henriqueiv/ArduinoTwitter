@@ -14,7 +14,7 @@ byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 byte ip[] = { 192, 168, 2, 250 };
 
 // Your Token to Tweet (get it from http://arduino-tweet.appspot.com/)
-Twitter twitter("107308370-ZDZViafGcTrHVo2eRnVFBcWoRxiTdba5kJWcvcR5");
+Twitter twitter;
 
 // Message to post
 char msg[] = "Hello World! Diretamente do Arduino!";
@@ -29,20 +29,50 @@ void setup(){
   
 }
 
+String serialData;
+int id;
+char SEPARATOR = (char) 9679;
+int TOKEN_ID = 1;
+int TWEET_ID = 2;
+
 void loop(){
-  Serial.println("connecting ...");
-  if (twitter.post(msg)) {
-    // Specify &Serial to output received response to Serial.
-    // If no output is required, you can just omit the argument, e.g.
-    // int status = twitter.wait();
-    int status = twitter.wait(&Serial);
-    if (status == 200) {
-      Serial.println("OK.");
-    } else {
-      Serial.print("failed : code ");
-      Serial.println(status);
-    }
-  } else {
-    Serial.println("connection failed.");
+  char c;
+  while(Serial.available()) {
+      c = Serial.read();
+      if(c == SEPARATOR){
+        id = c-48;
+        serialData = "";
+      }
+      serialData.concat(c);
+      Serial.write(c);
+  }
+  
+  doSomething(id);
+}
+
+void setToken(String token){
+   twitter(token);
+}
+
+void doSomething(int action){
+  switch(action){
+    case TOKEN_ID:
+       setToken(serialData);
+    case TWEET_ID:
+       Serial.println("Connecting ...");
+        if (twitter.post(serialData)) {
+          // Specify &Serial to output received response to Serial.
+          // If no output is required, you can just omit the argument, e.g.
+          // int status = twitter.wait();
+          int status = twitter.wait(&Serial);
+          if (status == 200) {
+            Serial.println("OK.");
+          } else {
+            Serial.print("Failed: code ");
+            Serial.println(status);
+          }
+        } else {
+          Serial.println("Connection failed.");
+        }
   }
 }

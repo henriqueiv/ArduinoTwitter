@@ -7,6 +7,8 @@ package com.controller;
 import com.model.Port;
 import com.model.SerialClass;
 import com.model.Tweet;
+import com.model.exceptions.TweetException;
+import com.utils.Utils;
 import gnu.io.CommPortIdentifier;
 import java.awt.Color;
 import java.awt.Desktop;
@@ -131,14 +133,18 @@ public class Controller {
     }
 
     public void createPortsMenu(JMenu menu) {
+        boolean hasSelected = false;
+        String lookingFor = "serial";
         ArrayList<Port> ports;
-        this.clearMenuItems(menu);
-        ports = this.getSerialPorts();
+        JRadioButtonMenuItem portMenu = new JRadioButtonMenuItem();;
         ButtonGroup groupMenu = new ButtonGroup();
+
+        this.clearMenuItems(menu);
+
+        ports = this.getSerialPorts();
         for (Port port : ports) {
-            //System.out.println(port.toString());
             //if (port.getPortType() == CommPortIdentifier.PORT_PARALLEL) {
-            JRadioButtonMenuItem portMenu = new JRadioButtonMenuItem();
+            portMenu = new JRadioButtonMenuItem();
             portMenu.setText(port.getPortName());
             ActionListener al = new ActionListener() {
                 @Override
@@ -149,7 +155,29 @@ public class Controller {
             portMenu.addActionListener(al);
             groupMenu.add(portMenu);
             menu.add(portMenu);
-            //}
+            if (!hasSelected) {
+                if (port.getPortName().contains(lookingFor)) {
+                    portMenu.setSelected(true);
+                    hasSelected = true;
+                } else {
+                }
+            }
+            //}else{
+            //    System.out.println("Port type: " + port.getPortType());
+            //}Ï
+        }
+
+        if (groupMenu.getButtonCount() == 0) {
+            portMenu = new JRadioButtonMenuItem();
+            portMenu.setText("No ports found! Connect your device and press F3");
+            portMenu.setEnabled(false);
+            groupMenu.add(portMenu);
+            menu.add(portMenu);
+        } else {
+            if (!hasSelected) {
+                portMenu.setSelected(true);
+                hasSelected = true;
+            }
         }
     }
 
@@ -173,7 +201,6 @@ public class Controller {
     }
 
     public static void selectPortMenu(Object source) {
-        System.out.println(source.getClass().getCanonicalName());
         if (source instanceof JMenuItem) {
             JMenuItem m = (JMenuItem) source;
             System.out.println("Setar porta " + m.getText());
@@ -185,15 +212,13 @@ public class Controller {
         }
     }
 
-    public boolean sendTweet(Tweet tweet) {
-        boolean tweetSent;
-
+    public void sendTweet(Tweet tweet) throws TweetException {
         if (!serial.isInitialized()) {
             serial.initialize();
         }
 
-        tweetSent = tweet.sendTweet(serial);
-
-        return tweetSent;
+        if (tweet.validateTweet(tweet)) {
+            tweet.sendTweet(serial);
+        }
     }
 }

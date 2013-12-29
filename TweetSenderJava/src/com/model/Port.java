@@ -11,7 +11,7 @@ import java.util.Objects;
  * @author henriquevalcanaia
  */
 public class Port {
-    
+
     private String portName;
     private int portType;
 

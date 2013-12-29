@@ -5,17 +5,17 @@
 package com.view;
 
 import com.controller.Controller;
-import gnu.io.CommPortIdentifier;
-import java.util.Enumeration;
-import javax.swing.JMenuItem;
-import javax.swing.JRadioButtonMenuItem;
+import com.model.Tweet;
+import com.model.exceptions.TweetException;
+import javax.swing.JOptionPane;
+import javax.swing.text.BadLocationException;
 
 /**
  *
  * @author henriquevalcanaia
  */
 public class MainWindow extends javax.swing.JFrame {
-    
+
     Controller c;
 
     /**
@@ -25,15 +25,15 @@ public class MainWindow extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         initController();
-
     }
-    
-    private void initController(){
-        this.c = new Controller();
-        this.c.setLbCountChar(lbCountChar);
-        this.c.setTaTweet(taTweet);
-        this.c.setCbShowToken(cbShowToken);
-        this.c.setPfToken(pfToken);
+
+    private void initController() {
+        c = new Controller();
+        c.setLbCountChar(lbCountChar);
+        c.setTaTweet(taTweet);
+        c.setCbShowToken(cbShowToken);
+        c.setPfToken(pfToken);
+        c.createPortsMenu(mSerialPort);
     }
 
     /**
@@ -57,6 +57,8 @@ public class MainWindow extends javax.swing.JFrame {
         lbCountChar = new javax.swing.JLabel();
         btSend = new javax.swing.JButton();
         jMenuBar2 = new javax.swing.JMenuBar();
+        jMenu3 = new javax.swing.JMenu();
+        jMenuItem3 = new javax.swing.JMenuItem();
         mOptions = new javax.swing.JMenu();
         miScanPorts = new javax.swing.JMenuItem();
         mSerialPort = new javax.swing.JMenu();
@@ -120,10 +122,23 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
+        jMenu3.setText("File");
+
+        jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ESCAPE, 0));
+        jMenuItem3.setText("Exit");
+        jMenu3.add(jMenuItem3);
+
+        jMenuBar2.add(jMenu3);
+
         mOptions.setText("Options");
 
         miScanPorts.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, 0));
         miScanPorts.setText("Scan serial ports");
+        miScanPorts.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miScanPortsActionPerformed(evt);
+            }
+        });
         mOptions.add(miScanPorts);
 
         mSerialPort.setText("Serial port");
@@ -228,11 +243,9 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_cbShowTokenActionPerformed
 
     private void pfTokenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pfTokenActionPerformed
-        // TODO add your handling code here:
     }//GEN-LAST:event_pfTokenActionPerformed
 
     private void taTweetKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_taTweetKeyPressed
-        
     }//GEN-LAST:event_taTweetKeyPressed
 
     private void taTweetKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_taTweetKeyReleased
@@ -244,7 +257,6 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_taTweetKeyTyped
 
     private void miTokenMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_miTokenMouseClicked
-        
     }//GEN-LAST:event_miTokenMouseClicked
 
     private void miTokenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miTokenActionPerformed
@@ -256,15 +268,31 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_miAboutActionPerformed
 
     private void btSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSendActionPerformed
-        c.createPortsMenu(mSerialPort);
+        String token;
+        String tweet;
+        try {
+            token = pfToken.getDocument().getText(0, pfToken.getDocument().getLength());
+            tweet = taTweet.getDocument().getText(0, taTweet.getDocument().getLength());
+            Tweet t = new Tweet(token, tweet);
+            c.sendTweet(t);
+        } catch (BadLocationException | TweetException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println(ex.getMessage());
+            //Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        String os = System.getProperty("os.name").toLowerCase();
+        System.out.println(os);
     }//GEN-LAST:event_btSendActionPerformed
 
     private void mSerialPortActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mSerialPortActionPerformed
-        
     }//GEN-LAST:event_mSerialPortActionPerformed
 
     private void mSerialPortMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mSerialPortMouseEntered
     }//GEN-LAST:event_mSerialPortMouseEntered
+
+    private void miScanPortsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miScanPortsActionPerformed
+        c.createPortsMenu(mSerialPort);        
+    }//GEN-LAST:event_miScanPortsActionPerformed
 
     /**
      * @param args the command line arguments
@@ -305,9 +333,11 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JCheckBox cbShowToken;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuBar jMenuBar2;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JLabel lbCountChar;
